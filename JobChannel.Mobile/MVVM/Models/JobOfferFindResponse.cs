@@ -40,14 +40,29 @@ namespace JobChannel.Mobile.MVVM.Models
         public string Department { get; set; }
         public int Id_Region { get; set; }
         public string Region { get; set; }
+
+        public override string ToString()
+        {
+            return Title;
+        }
     }
 
     public class JobOfferFindResponseSource : IIncrementalSource<JobOfferFindResponse>
     {
+        private readonly List<JobOfferFindResponse> _jobOffers;
+
+        public JobOfferFindResponseSource()
+        {
+            _jobOffers = Enumerable.Range(0, 1000).Select(i => new JobOfferFindResponse() { Id = i, Title = "Titre " + i}).ToList();
+        }
+
         public async Task<IEnumerable<JobOfferFindResponse>> GetPagedItemsAsync(int pageIndex, int pageSize, CancellationToken cancellationToken = default)
         {
             var request = new JobOfferFindRequest() { Count = pageSize, Page = pageIndex };
-            return await Task.FromResult(new List<JobOfferFindResponse>().AsEnumerable());
+
+            await Task.Delay(1000);
+
+            return await Task.FromResult(_jobOffers.Skip(pageIndex * pageSize).Take(pageSize));
         }
     }
 }
