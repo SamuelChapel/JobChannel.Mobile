@@ -1,18 +1,7 @@
-﻿using JobChannel.Mobile.MVVM.ViewsModels;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+﻿using JobChannel.Mobile.Domain.BO;
+using JobChannel.Mobile.MVVM.ViewsModels;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 namespace JobChannel.Mobile
 {
@@ -21,12 +10,39 @@ namespace JobChannel.Mobile
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private readonly MainVM vm = new MainVM();
+        private readonly MainVM vm;
 
         public MainPage()
         {
-            this.InitializeComponent();
+            vm = new MainVM(this);
+            InitializeComponent();
+
             DataContext = vm;
+        }
+
+        private void TokenBoxRegion_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if(args.CheckCurrent() && args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                vm.RefreshFilter(TokenBoxRegion.Text);
+            }
+        }
+
+        private void RegionList_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            if(e.ClickedItem != null && e.ClickedItem is Region r)
+            {
+                TokenBoxRegion.Text = string.Empty;
+
+                if (TokenBoxRegion.Items.Count < 6)
+                {
+                    TokenBoxRegion.AddTokenItem(r);
+                }
+
+                vm.RefreshFilter();
+                TokenBoxRegion.Focus(FocusState.Programmatic);
+                
+            }
         }
     }
 }

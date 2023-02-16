@@ -6,23 +6,99 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:control ="using:JobChannel.Mobile.Controls"
+    xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
+        <local:NameToColorConverter x:Key="NameToColorConverter"/>
         <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}" x:Key="SystemControlForegroundChromeLowBrush"/>
+        <DataTemplate x:Key="ItemTokenTemplate">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Name}" Padding="4,0,0,0"/>
+            </StackPanel>
+        </DataTemplate>
     </Page.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="100"/>
+            <RowDefinition MaxHeight="300" Height="200"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBox x:Name="searchTB" PlaceholderText="Entrez votre recherche" Text="" ></TextBox>
-        <Button x:Name="btTest" Content="Bouton 1" Click="{x:Bind vm.Test}"></Button>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
+            <TextBlock x:Uid="MainPage_RegionTextbox" FontSize="16" Text="Region"
+                 Margin="0,0,0,4" HorizontalAlignment="Center"/>
+            <controls:TokenizingTextBox
+            x:Name="TokenBoxRegion"
+            ItemsSource="{x:Bind vm.SelectedRegions}"
+            PlaceholderText="Selectionnez jusqu'a 5 Regions"
+            QueryIcon="{ui:SymbolIconSource Symbol=Find}"
+            MaxHeight="104"
+            HorizontalAlignment="Stretch"
+            TokenDelimiter=","
+            IsItemClickEnabled="True"
+            TokenItemTemplate="{StaticResource ItemTokenTemplate}" TextChanged="TokenBoxRegion_TextChanged">
+            </controls:TokenizingTextBox>
 
-        <ListView Grid.Row="1" ItemsSource="{x:Bind vm.jobOffers}">
+            <Border BorderThickness="1,0,1,1">
+                <ListView x:Name="RegionList"  Height="150" IsItemClickEnabled="True"
+                  ItemTemplate="{StaticResource ItemTokenTemplate}"
+                          ItemsSource="{x:Bind vm.SearchRegions}" ItemClick="RegionList_ItemClick">
+                </ListView>
+            </Border>
+        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <TextBlock x:Uid="MainPage_ContratTextbox" FontSize="16" Text="Contrats"
+                 Margin="0,0,0,4" HorizontalAlignment="Center"/>
+            <controls:TokenizingTextBox
+            x:Name="TokenBoxContract"
+            ItemsSource="{x:Bind vm.SelectedRegions}"
+            PlaceholderText="Selectionnez jusqu'a 5 contrats"
+            QueryIcon="{ui:SymbolIconSource Symbol=Find}"
+            MaxHeight="104"
+            HorizontalAlignment="Stretch"
+            TokenDelimiter=","
+            IsItemClickEnabled="True"
+            TokenItemTemplate="{StaticResource ItemTokenTemplate}" TextChanged="TokenBoxRegion_TextChanged">
+            </controls:TokenizingTextBox>
 
-        </ListView>
+            <Border BorderThickness="1,0,1,1">
+                <ListView x:Name="ContractList" Height="150" IsItemClickEnabled="True"
+                  ItemTemplate="{StaticResource ItemTokenTemplate}"
+                          ItemsSource="{x:Bind vm.SearchRegions}" ItemClick="RegionList_ItemClick">
+                </ListView>
+            </Border>
+        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="2">
+            <TextBlock x:Uid="MainPage_JobTextbox" FontSize="16" Text="Poste"
+                 Margin="0,0,0,4" HorizontalAlignment="Center"/>
+            <controls:TokenizingTextBox
+            x:Name="TokenBoxJob"
+            ItemsSource="{x:Bind vm.SelectedRegions}"
+            PlaceholderText="Selectionnez jusqu'a 5 postes"
+            QueryIcon="{ui:SymbolIconSource Symbol=Find}"
+            MaxHeight="104"
+            HorizontalAlignment="Stretch"
+            TokenDelimiter=","
+            IsItemClickEnabled="True"
+            TokenItemTemplate="{StaticResource ItemTokenTemplate}" TextChanged="TokenBoxRegion_TextChanged">
+            </controls:TokenizingTextBox>
+
+            <Border BorderThickness="1,0,1,1">
+                <ListView x:Name="JobList" Height="150" IsItemClickEnabled="True"
+                  ItemTemplate="{StaticResource ItemTokenTemplate}"
+                          ItemsSource="{x:Bind vm.SearchRegions}" ItemClick="RegionList_ItemClick">
+                </ListView>
+            </Border>
+        </StackPanel>
+
+        <!--<controls:DataGrid  x:Name="DataGridJobOffer" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{x:Bind vm.JobOffers}"/>-->
+        <ListView  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{x:Bind vm.JobOffers}"></ListView>
     </Grid>
 </Page>
