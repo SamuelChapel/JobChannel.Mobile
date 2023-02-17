@@ -9,7 +9,8 @@
     xmlns:control ="using:JobChannel.Mobile.Controls"
     xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
+    Loaded="Page_Loaded">
 
     <Page.Resources>
         <local:NameToColorConverter x:Key="NameToColorConverter"/>
@@ -19,41 +20,53 @@
                 <TextBlock Text="{Binding Name}" Padding="4,0,0,0"/>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate x:Key="SuggestedItemTemplate">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Name}" Padding="4,0,0,0"/>
+            </StackPanel>
+        </DataTemplate>
     </Page.Resources>
 
-    <Grid>
+    <Grid Margin="40,40,40,40">
         <Grid.RowDefinitions>
-            <RowDefinition MaxHeight="300" Height="200"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition MaxHeight="150"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.RowSpan="4">
             <TextBlock x:Uid="MainPage_RegionTextbox" FontSize="16" Text="Region"
                  Margin="0,0,0,4" HorizontalAlignment="Center"/>
             <controls:TokenizingTextBox
             x:Name="TokenBoxRegion"
             ItemsSource="{x:Bind vm.SelectedRegions}"
-            PlaceholderText="Selectionnez jusqu'a 5 Regions"
+            PlaceholderText="Recherchez par Regions"
             QueryIcon="{ui:SymbolIconSource Symbol=Find}"
             MaxHeight="104"
             HorizontalAlignment="Stretch"
             TokenDelimiter=","
             IsItemClickEnabled="True"
-            TokenItemTemplate="{StaticResource ItemTokenTemplate}" TextChanged="TokenBoxRegion_TextChanged">
+            MaximumTokens="5"
+            TokenItemTemplate="{StaticResource ItemTokenTemplate}"
+            SuggestedItemsSource="{x:Bind vm.SearchRegions}"
+            SuggestedItemTemplate="{StaticResource SuggestedItemTemplate}"
+            TextChanged="TokenBoxRegion_TextChanged">
             </controls:TokenizingTextBox>
 
-            <Border BorderThickness="1,0,1,1">
-                <ListView x:Name="RegionList"  Height="150" IsItemClickEnabled="True"
-                  ItemTemplate="{StaticResource ItemTokenTemplate}"
-                          ItemsSource="{x:Bind vm.SearchRegions}" ItemClick="RegionList_ItemClick">
+            <!--<Border BorderThickness="1,0,1,1">
+                <ListView x:Name="RegionList"
+                          Height="150" 
+                          IsItemClickEnabled="True"
+                          ItemTemplate="{StaticResource ItemTokenTemplate}"
+                          ItemsSource="{x:Bind vm.SearchRegions}" 
+                          ItemClick="RegionList_ItemClick">
                 </ListView>
-            </Border>
+            </Border>-->
         </StackPanel>
-        <StackPanel Grid.Row="0" Grid.Column="1">
+        <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="3">
             <TextBlock x:Uid="MainPage_ContratTextbox" FontSize="16" Text="Contrats"
                  Margin="0,0,0,4" HorizontalAlignment="Center"/>
             <controls:TokenizingTextBox
@@ -75,7 +88,7 @@
                 </ListView>
             </Border>
         </StackPanel>
-        <StackPanel Grid.Row="0" Grid.Column="2">
+        <StackPanel Grid.Row="0" Grid.Column="2" Grid.RowSpan="3">
             <TextBlock x:Uid="MainPage_JobTextbox" FontSize="16" Text="Poste"
                  Margin="0,0,0,4" HorizontalAlignment="Center"/>
             <controls:TokenizingTextBox
@@ -87,7 +100,9 @@
             HorizontalAlignment="Stretch"
             TokenDelimiter=","
             IsItemClickEnabled="True"
-            TokenItemTemplate="{StaticResource ItemTokenTemplate}" TextChanged="TokenBoxRegion_TextChanged">
+            TokenItemTemplate="{StaticResource ItemTokenTemplate}"
+            MaximumTokens="5"
+            TextChanged="TokenBoxRegion_TextChanged">
             </controls:TokenizingTextBox>
 
             <Border BorderThickness="1,0,1,1">

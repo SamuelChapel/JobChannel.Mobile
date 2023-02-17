@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace JobChannel.Mobile.MVVM.Models
 {
-    public class JobOfferM : IIncrementalSource<JobOfferFindResponse>
+    public class JobOfferModel : IIncrementalSource<JobOfferFindResponse>
     {
         private readonly List<JobOfferFindResponse> _jobOffers;
 
-        public JobOfferM()
+        public JobOfferModel()
         {
             _jobOffers = Enumerable.Range(0, 1000).Select(i => new JobOfferFindResponse() { Id = i, Title = "Titre " + i}).ToList();
         }

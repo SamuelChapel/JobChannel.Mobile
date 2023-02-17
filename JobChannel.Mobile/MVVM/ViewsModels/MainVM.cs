@@ -1,8 +1,11 @@
 ﻿using JobChannel.Mobile.Domain.BO;
 using JobChannel.Mobile.Domain.Responses;
+using JobChannel.Mobile.Http;
 using JobChannel.Mobile.MVVM.Models;
 using Microsoft.Toolkit.Uwp;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,10 +15,10 @@ namespace JobChannel.Mobile.MVVM.ViewsModels
 {
     public class MainVM : ViewModelBase
     {
-        private Page AssociatedPage;
+        private readonly Page associatedPage;
         public string Titre { get; set; }
 
-        public IncrementalLoadingCollection<JobOfferM, JobOfferFindResponse> JobOffers = new IncrementalLoadingCollection<JobOfferM, JobOfferFindResponse>();
+        public IncrementalLoadingCollection<JobOfferModel, JobOfferFindResponse> JobOffers = new IncrementalLoadingCollection<JobOfferModel, JobOfferFindResponse>();
 
         public ObservableCollection<Region> Regions = new ObservableCollection<Region>();
         public ObservableCollection<Region> SelectedRegions = new ObservableCollection<Region>();
@@ -23,8 +26,7 @@ namespace JobChannel.Mobile.MVVM.ViewsModels
 
         public MainVM(Page page)
         {
-            AssociatedPage = page;
-            Enumerable.Range(0, 15).Select(i => new Region(i, "Region " + i, "R" + i)).ToList().ForEach(region => Regions.Add(region));
+            associatedPage = page;
         }
 
         public async void Test()
@@ -38,10 +40,17 @@ namespace JobChannel.Mobile.MVVM.ViewsModels
             
             await Task.Delay(50);
 
-            AssociatedPage.Frame.Navigate(typeof(MainPage));
+            associatedPage.Frame.Navigate(typeof(MainPage));
         }
 
-        public void RefreshFilter(string text = null)
+        public async Task RefreshRegions()
+        {
+            var regions = await JobChannelHttpClient.Instance.GetRequest<IEnumerable<Region>>("api/Region");
+
+            regions?.ToList().ForEach(region => Regions.Add(region));
+        }
+
+        public void RefreshSuggestedRegions(string text = null)
         {
             SearchRegions.Clear();
 

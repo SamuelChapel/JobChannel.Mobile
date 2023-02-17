@@ -1,5 +1,6 @@
 ﻿using JobChannel.Mobile.Domain.BO;
 using JobChannel.Mobile.MVVM.ViewsModels;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -24,7 +25,7 @@ namespace JobChannel.Mobile
         {
             if(args.CheckCurrent() && args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
-                vm.RefreshFilter(TokenBoxRegion.Text);
+                vm.RefreshSuggestedRegions(TokenBoxRegion.Text);
             }
         }
 
@@ -39,10 +40,14 @@ namespace JobChannel.Mobile
                     TokenBoxRegion.AddTokenItem(r);
                 }
 
-                vm.RefreshFilter();
+                vm.RefreshSuggestedRegions();
                 TokenBoxRegion.Focus(FocusState.Programmatic);
-                
             }
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            Task.Run(() => vm.RefreshRegions());
         }
     }
 }

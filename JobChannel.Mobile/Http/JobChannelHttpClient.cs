@@ -15,7 +15,7 @@ namespace JobChannel.Mobile.Http
     public class JobChannelHttpClient : IJobChannelHttpClient
     {
         private static volatile JobChannelHttpClient _instance;
-        private static readonly object _syncRoot = new Object();
+        private static readonly object _syncRoot = new object();
 
         private readonly HttpClient _client = new HttpClient();
         public DateTime ExpireDate { get; private set; }
