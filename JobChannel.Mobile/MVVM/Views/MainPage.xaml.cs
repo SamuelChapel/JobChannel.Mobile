@@ -1,5 +1,6 @@
 ﻿using JobChannel.Mobile.Domain.BO;
 using JobChannel.Mobile.MVVM.ViewsModels;
+using System;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -19,6 +20,14 @@ namespace JobChannel.Mobile
             InitializeComponent();
 
             DataContext = vm;
+            MinDateCalendar.MinDate= new DateTimeOffset(DateTime.Now);
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            Task.Run(() => vm.RefreshRegions());
+            Task.Run(() => vm.RefreshContracts());
+            Task.Run(() => vm.RefreshJobs());
         }
 
         private void TokenBoxRegion_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
@@ -29,25 +38,20 @@ namespace JobChannel.Mobile
             }
         }
 
-        private void RegionList_ItemClick(object sender, ItemClickEventArgs e)
+        private void TokenBoxContract_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            if(e.ClickedItem != null && e.ClickedItem is Region r)
+            if (args.CheckCurrent() && args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
-                TokenBoxRegion.Text = string.Empty;
-
-                if (TokenBoxRegion.Items.Count < 6)
-                {
-                    TokenBoxRegion.AddTokenItem(r);
-                }
-
-                vm.RefreshSuggestedRegions();
-                TokenBoxRegion.Focus(FocusState.Programmatic);
+                vm.RefreshSuggestedContracts(TokenBoxContract.Text);
             }
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private void TokenBoxJob_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            Task.Run(() => vm.RefreshRegions());
+            if (args.CheckCurrent() && args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                vm.RefreshSuggestedJobs(TokenBoxJob.Text);
+            }
         }
     }
 }

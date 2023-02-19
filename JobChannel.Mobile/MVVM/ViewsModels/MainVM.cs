@@ -24,6 +24,14 @@ namespace JobChannel.Mobile.MVVM.ViewsModels
         public ObservableCollection<Region> SelectedRegions = new ObservableCollection<Region>();
         public ObservableCollection<Region> SearchRegions = new ObservableCollection<Region>();
 
+        public ObservableCollection<Contract> Contracts = new ObservableCollection<Contract>();
+        public ObservableCollection<Contract> SelectedContracts = new ObservableCollection<Contract>();
+        public ObservableCollection<Contract> SearchContracts = new ObservableCollection<Contract>();
+
+        public ObservableCollection<Job> Jobs = new ObservableCollection<Job>();
+        public ObservableCollection<Job> SelectedJobs = new ObservableCollection<Job>();
+        public ObservableCollection<Job> SearchJobs = new ObservableCollection<Job>();
+
         public MainVM(Page page)
         {
             associatedPage = page;
@@ -58,17 +66,55 @@ namespace JobChannel.Mobile.MVVM.ViewsModels
 
             if(!String.IsNullOrEmpty(text))
             {
-                var textLower = text.ToLower();
+                var textLower = text.Trim().ToLower();
                 regions = regions.Where(r => r.Name.ToLower().Contains(textLower)).ToList();
             }
 
             regions.ToList().ForEach(region => SearchRegions.Add(region));
         }
 
-        public void AddSelectedRegion(Region r)
+        public async Task RefreshContracts()
         {
-            SelectedRegions.Add(r);
-            Regions.Remove(r);
+            var contracts = await JobChannelHttpClient.Instance.GetRequest<IEnumerable<Contract>>("api/Contract");
+
+            contracts?.ToList().ForEach(contract => Contracts.Add(contract));
+        }
+
+        public void RefreshSuggestedContracts(string text = null)
+        {
+            SearchContracts.Clear();
+
+            var contracts = Contracts.Except(SelectedContracts);
+
+            if (!String.IsNullOrEmpty(text))
+            {
+                var textLower = text.Trim().ToLower();
+                contracts = contracts.Where(j => j.Name.ToLower().Contains(textLower)).ToList();
+            }
+
+            contracts.ToList().ForEach(contract => SearchContracts.Add(contract));
+        }
+
+        public async Task RefreshJobs()
+        {
+            var jobs = await JobChannelHttpClient.Instance.GetRequest<IEnumerable<Job>>("api/Job");
+
+            jobs?.ToList().ForEach(job => Jobs.Add(job));
+        }
+
+        public void RefreshSuggestedJobs(string text = null)
+        {
+            SearchJobs.Clear();
+
+            var jobs = Jobs.Except(SelectedJobs);
+
+            if (!String.IsNullOrEmpty(text))
+            {
+                var textLower = text.Trim().ToLower();
+                jobs = jobs.Where(j => j.Name.ToLower().Contains(textLower)).ToList();
+            }
+
+            jobs.ToList().ForEach(job => SearchJobs.Add(job));
         }
     }
 }
