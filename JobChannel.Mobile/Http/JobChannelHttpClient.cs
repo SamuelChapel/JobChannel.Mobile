@@ -26,6 +26,7 @@ namespace JobChannel.Mobile.Http
         private JobChannelHttpClient()
         {
             _client.BaseAddress = new Uri("http://user47.2isa.org");
+            //_client.BaseAddress = new Uri("http://localhost:5000");
 
             ExpireDate = DateTime.MinValue;
             jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
@@ -61,7 +62,9 @@ namespace JobChannel.Mobile.Http
         {
             var response = await CallHttpClient(TypeREST.Post, url, data);
 
-            return await response.Content.ReadFromJsonAsync<T>();
+            var content = await response.Content.ReadFromJsonAsync<T>();
+
+            return content;
         }
 
         public async Task<bool> PutRequest<TRequest>(string url, TRequest data) where TRequest : IRequest
@@ -98,7 +101,7 @@ namespace JobChannel.Mobile.Http
                     _ => throw new NotImplementedException("Type Rest non Valide")
                 };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
@@ -119,7 +122,7 @@ namespace JobChannel.Mobile.Http
 
                 _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", responseToken);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new Exception("Authentication Problem");
             }

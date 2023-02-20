@@ -1,8 +1,10 @@
 ﻿using System;
+using JobChannel.Mobile.Domain.Contracts;
 
 namespace JobChannel.Mobile.Domain.Responses
 {
-    public class JobOfferFindResponse
+    public class JobOfferFindResponse : IResponse
+
     {
         public int Id { get; set; }
         public string Title { get; set; }

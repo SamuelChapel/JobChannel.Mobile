@@ -1,4 +1,5 @@
 ﻿using JobChannel.Mobile.Domain.BO;
+using JobChannel.Mobile.Domain.Requests;
 using JobChannel.Mobile.Domain.Responses;
 using JobChannel.Mobile.Http;
 using JobChannel.Mobile.MVVM.Models;
@@ -18,7 +19,9 @@ namespace JobChannel.Mobile.MVVM.ViewsModels
         private readonly Page associatedPage;
         public string Titre { get; set; }
 
-        public IncrementalLoadingCollection<JobOfferModel, JobOfferFindResponse> JobOffers = new IncrementalLoadingCollection<JobOfferModel, JobOfferFindResponse>();
+        public static JobOfferFindRequest JobOfferFindRequest { get; private set; }
+
+        public IncrementalLoadingCollection<JobOfferModel, JobOfferFindResponse> JobOffers = new IncrementalLoadingCollection<JobOfferModel, JobOfferFindResponse>(30);
 
         public ObservableCollection<Region> Regions = new ObservableCollection<Region>();
         public ObservableCollection<Region> SelectedRegions = new ObservableCollection<Region>();
@@ -34,6 +37,7 @@ namespace JobChannel.Mobile.MVVM.ViewsModels
 
         public MainVM(Page page)
         {
+            JobOfferFindRequest = new JobOfferFindRequest();
             associatedPage = page;
         }
 
@@ -45,7 +49,7 @@ namespace JobChannel.Mobile.MVVM.ViewsModels
                 "en-US" => "fr-FR",
                 _ => "fr-FR"
             };
-            
+
             await Task.Delay(50);
 
             associatedPage.Frame.Navigate(typeof(MainPage));
@@ -64,7 +68,7 @@ namespace JobChannel.Mobile.MVVM.ViewsModels
 
             var regions = Regions.Except(SelectedRegions);
 
-            if(!String.IsNullOrEmpty(text))
+            if (!String.IsNullOrEmpty(text))
             {
                 var textLower = text.Trim().ToLower();
                 regions = regions.Where(r => r.Name.ToLower().Contains(textLower)).ToList();
@@ -115,6 +119,15 @@ namespace JobChannel.Mobile.MVVM.ViewsModels
             }
 
             jobs.ToList().ForEach(job => SearchJobs.Add(job));
+        }
+
+        public void SearchJobOffers()
+        {
+            JobOfferFindRequest.Id_Region = SelectedRegions.Count > 0 ? SelectedRegions.Select(r => r.Id).ToList() : null;
+            JobOfferFindRequest.Id_Contract = SelectedContracts.Count > 0 ? SelectedContracts.Select(c => c.Id).ToList() : null;
+            JobOfferFindRequest.Id_Job = SelectedJobs.Count > 0 ? SelectedJobs.Select(j => j.Id).ToList() : null;
+
+            Task.Run(() => JobOffers.RefreshAsync());
         }
     }
 }

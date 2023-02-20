@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using JobChannel.Mobile.Domain.Contracts;
 
 namespace JobChannel.Mobile.Domain.Requests
 {
-    public class JobOfferFindRequest
+    public class JobOfferFindRequest : IRequest
     {
         public int Count { get; set; }
         public int Page { get; set; }
