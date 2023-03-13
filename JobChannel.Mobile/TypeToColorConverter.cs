@@ -1,28 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 using Windows.UI;
+using JobChannel.Mobile.Domain.BO;
 
 namespace JobChannel.Mobile
 {
-    public class NameToColorConverter : IValueConverter
+    public class TypeToColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var color = Colors.Black;
-
-            if (value != null)
+            var color = targetType switch
             {
-                var hash = value.GetHashCode();
-
-                var rnd = new Random(hash);
-
-                color = Color.FromArgb(255, (byte)rnd.Next(64, 192), (byte)rnd.Next(64, 192), (byte)rnd.Next(64, 192));
-            }
+                var c when c == typeof(Region) => Colors.LightBlue,
+                var c when c == typeof(Contract) => Colors.LightGreen,
+                var c when c == typeof(Job) => Colors.LightYellow,
+                _ => Colors.Black
+            };
 
             return new SolidColorBrush(color);
         }

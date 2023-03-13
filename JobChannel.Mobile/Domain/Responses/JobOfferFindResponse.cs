@@ -24,6 +24,8 @@ namespace JobChannel.Mobile.Domain.Responses
         public int Id_Region { get; set; }
         public string Region { get; set; }
 
+        public string Header { get => $"{Id} / {PublicationDate} / {Title} / {Contract} / {Job} / {Region}"; }
+
         public override string ToString()
         {
             return Title;

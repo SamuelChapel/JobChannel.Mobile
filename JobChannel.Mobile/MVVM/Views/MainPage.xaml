@@ -6,13 +6,16 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
-    xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
+    xmlns:ui="using:Microsoft.Toolkit.Uwp.UI" 
+    xmlns:viewsmodels="using:JobChannel.Mobile.MVVM.ViewsModels" 
+    xmlns:winui="using:Microsoft.UI.Xaml.Controls" d:DataContext="{d:DesignInstance Type=viewsmodels:MainVM}"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
     Loaded="Page_Loaded">
 
     <Page.Resources>
-        <local:NameToColorConverter x:Key="NameToColorConverter"/>
+        <local:TypeToColorConverter x:Key="TypeToColorConverter"/>
+        <local:DateConverter x:Key="DateConverter"/>
         <SolidColorBrush Color="{ThemeResource SystemChromeLowColor}" x:Key="SystemControlForegroundChromeLowBrush"/>
         <DataTemplate x:Key="ItemTokenTemplate">
             <StackPanel Orientation="Horizontal">
@@ -29,35 +32,22 @@
     <Grid Margin="10,10,10,10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <controls:Expander x:Name="Expander1" VerticalAlignment="Top" Margin="0,0,0,10"
-                           Grid.Row="0"
-                           Grid.Column="0"
-                           Header="Filtres"
-                           HorizontalContentAlignment="Stretch"
-                           IsExpanded="False"
-                           ExpandDirection="Down">
-            <Grid Margin="10,10,10,10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <controls:TokenizingTextBox
+
+        <controls:TokenizingTextBox
             x:Name="TokenBoxRegion"
             Margin="10,10,10,10"
             Grid.Row="0"
             Grid.Column="0"
-            ItemsSource="{x:Bind vm.SelectedRegions}"
+            ItemsSource="{x:Bind vm.SelectedRegions, Mode=TwoWay}"
             PlaceholderText="Recherchez par Regions"
             QueryIcon="{ui:SymbolIconSource Symbol=Find}"
             MinHeight="50"
@@ -69,10 +59,9 @@
             TokenItemTemplate="{StaticResource ItemTokenTemplate}"
             SuggestedItemsSource="{x:Bind vm.SearchRegions}"
             SuggestedItemTemplate="{StaticResource SuggestedItemTemplate}"
-            TextChanged="TokenBoxRegion_TextChanged" FocusEngaged="TokenBoxRegion_FocusEngaged" TokenItemAdded="TokenBoxRegion_TokenItemAdded" TokenItemRemoved="TokenBoxRegion_TokenItemRemoved">
-                </controls:TokenizingTextBox>
+            TextChanged="TokenBoxRegion_TextChanged" FocusEngaged="TokenBoxRegion_FocusEngaged" TokenItemAdded="TokenBox_TokenItemAdded" TokenItemRemoved="TokenBox_TokenItemRemoved"/>
 
-                <controls:TokenizingTextBox
+        <controls:TokenizingTextBox
             x:Name="TokenBoxContract"
             Margin="10,10,10,10"
             Grid.Row="0"
@@ -89,15 +78,14 @@
             TokenItemTemplate="{StaticResource ItemTokenTemplate}"
             SuggestedItemsSource="{x:Bind vm.SearchContracts}"
             SuggestedItemTemplate="{StaticResource SuggestedItemTemplate}"
-            TextChanged="TokenBoxContract_TextChanged">
-                </controls:TokenizingTextBox>
+            TextChanged="TokenBoxContract_TextChanged" TokenItemAdded="TokenBox_TokenItemAdded" TokenItemRemoved="TokenBox_TokenItemRemoved"/>
 
-                <controls:TokenizingTextBox
+        <controls:TokenizingTextBox
             x:Name="TokenBoxJob"
             Margin="10,10,10,10"
             Grid.Row="0"
             Grid.Column="3"
-            ItemsSource="{x:Bind vm.SelectedJobs}"
+            ItemsSource="{x:Bind vm.SelectedJobs, Mode=TwoWay}"
             PlaceholderText="Recherchez par Poste"
             QueryIcon="{ui:SymbolIconSource Symbol=Find}"
             MinHeight="50"
@@ -109,38 +97,84 @@
             TokenItemTemplate="{StaticResource ItemTokenTemplate}"
             SuggestedItemsSource="{x:Bind vm.SearchJobs}"
             SuggestedItemTemplate="{StaticResource SuggestedItemTemplate}"
-            TextChanged="TokenBoxJob_TextChanged">
-                </controls:TokenizingTextBox>
+            TextChanged="TokenBoxJob_TextChanged" TokenItemAdded="TokenBox_TokenItemAdded" TokenItemRemoved="TokenBox_TokenItemRemoved"/>
 
-                <StackPanel
+        <StackPanel
             Grid.Row="1" 
             Grid.Column="0"
             Orientation="Horizontal">
-                    <TextBlock Text="Date Minimale" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,10,50,10"></TextBlock>
-                    <CalendarDatePicker 
+            <TextBlock Text="Date Minimale" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,10,50,10"></TextBlock>
+            <CalendarDatePicker Date="{x:Bind vm.dateMin, Mode=TwoWay, Converter={StaticResource DateConverter}}"
             x:Name="MinDateCalendar" DateChanged="MinDateCalendar_DateChanged"/>
-                </StackPanel>
+        </StackPanel>
 
-                <StackPanel
+        <StackPanel
             Grid.Row="1" 
             Grid.Column="1"
             Orientation="Horizontal">
-                    <TextBlock Text="Date Maximale" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,10,50,10"></TextBlock>
-                    <CalendarDatePicker 
+            <TextBlock Text="Date Maximale" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,10,50,10"></TextBlock>
+            <CalendarDatePicker Date="{x:Bind vm.dateMax, Mode=TwoWay, Converter={StaticResource DateConverter}}"
             x:Name="MaxDateCalendar" DateChanged="MaxDateCalendar_DateChanged"/>
-                </StackPanel>
+        </StackPanel>
 
-                <Button
-            x:Name="ResetFiltersButton"
-            Grid.Row="1"
+        <StackPanel Grid.Row="1"
             Grid.Column="2"
+            HorizontalAlignment="Center" Orientation="Horizontal">
+            <Button
+            x:Name="ResetFiltersButton"
+            Margin="10,10,10,10"
+            Content="Effacer les Filtres" Click="ResetFiltersButton_Click" Background="#B3FF8383"/>
+            <Button
+            x:Name="SaveFiltersButton"
             HorizontalAlignment="Center"
             Margin="10,10,10,10"
-            Content="Effacer les Filtres" Click="ResetFiltersButton_Click"/>
-            </Grid>
-        </controls:Expander>
+            Content="Enregistrer les Filtres" Background="#B3CCFDAC" Click="SaveFiltersButton_Click"/>
+        </StackPanel>
 
-        <controls:DataGrid  x:Name="DataGridJobOffer" Grid.Row="2" Grid.Column="0" ItemsSource="{x:Bind vm.JobOffers}"/>
-        <!--<ListView  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{x:Bind vm.JobOffers}"></ListView>-->
+        <!--<StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" Padding="10" Background="DarkGray" Margin="0,10">
+            <winui:ItemsRepeater ItemsSource="{x:Bind vm.SelectedRegions}">
+                <winui:ItemsRepeater.Layout>
+                    <controls:WrapLayout VerticalSpacing="10" HorizontalSpacing="10"/>
+                </winui:ItemsRepeater.Layout>
+            </winui:ItemsRepeater>
+        </StackPanel>-->
+
+        <ListView  x:Name="JobOfferListView" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{x:Bind vm.JobOffers}" Background="LightGray" HorizontalContentAlignment="Stretch" SelectionMode="None">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <controls:Expander 
+                           x:Name="jobOfferExpander"
+                           VerticalAlignment="Top" Margin="0,10,10,10"
+                           HorizontalAlignment="Stretch"
+                           Grid.Row="0"
+                           Grid.Column="0"
+                           Header="{Binding Header}"
+                           HorizontalContentAlignment="Stretch"
+                           IsExpanded="False"
+                           ExpandDirection="Down"
+                           BorderThickness="1"
+                           BorderBrush="Black"
+                           Expanded="Expander_Expanded"
+                            Width="auto"
+                           >
+                        <StackPanel Orientation="Vertical" Margin="0" Padding="10,10" HorizontalAlignment="Stretch" Background="Beige">
+                            <StackPanel Orientation="Horizontal" Margin="10,10" HorizontalAlignment="Stretch">
+                                <Border CornerRadius="9999" Background="DarkCyan"
+                                        Width="Auto" Height="20" HorizontalAlignment="Stretch">
+                                    <TextBlock Text="{Binding Id}" Foreground="White"
+                                               FontSize="10"
+                                               FontWeight="Semibold"
+                                               HorizontalAlignment="Stretch"
+                                               VerticalAlignment="Center"
+                                               Padding="10"/>
+                                </Border>
+                                <TextBlock Text="{Binding Title}" Foreground="Black" Padding="4,0,0,0"/>
+                            </StackPanel>
+                            <HyperlinkButton Content="{Binding Url}" NavigateUri="{Binding Url}"></HyperlinkButton>
+                        </StackPanel>
+                    </controls:Expander>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </Page>

@@ -26,7 +26,7 @@ namespace JobChannel.Mobile.Http
         private JobChannelHttpClient()
         {
             _client.BaseAddress = new Uri("http://user47.2isa.org");
-            //_client.BaseAddress = new Uri("http://localhost:5000");
+            //_client.BaseAddress = new Uri("https://localhost:5001");
 
             ExpireDate = DateTime.MinValue;
             jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
@@ -101,7 +101,7 @@ namespace JobChannel.Mobile.Http
                     _ => throw new NotImplementedException("Type Rest non Valide")
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
@@ -122,7 +122,7 @@ namespace JobChannel.Mobile.Http
 
                 _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", responseToken);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new Exception("Authentication Problem");
             }
