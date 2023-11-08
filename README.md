@@ -26,6 +26,22 @@ Voici les applications de cette solution :
 ## Tests
 Les test ont étés éffectués tout au long du développement en utilisant des **tests unitaires** et des **tests d'intégration** avec le framework **xUnit**.
 
+# JobChannel Mobile
+
+## Architecture
+architecture **MVVM** :
+![image](https://github.com/SamuelChapel/JobChannel.Mobile/assets/86355019/53230a67-ac46-48b4-a504-7e18ad821e3f)
+
+## Fonctionnalités
+
+- Consultations des offres d'emplois avec système de filtres:
+  - Intervalle de dates
+  - Région
+  - Type de contrat
+  - Poste reccherché
+- Liste incrémentale avec pagination et scroll infini
+- Offre extensible avec vue détaillée
+
 ## Exemple d'écran de l'application mobile
 
 ![image](https://github.com/SamuelChapel/JobChannel.Mobile/assets/86355019/a5bb0c2d-56e0-4730-9f3a-b646365750ce)
